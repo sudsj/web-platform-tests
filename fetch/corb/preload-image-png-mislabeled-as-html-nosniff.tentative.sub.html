@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!-- This test verifies observable CORB impact on <link rel="preload"> elements.
+-->
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+
+<script>
+async_test(function(t) {
+  window.preloadErrorEvent = function() {
+    // With CORB the link.onerror event will be reached
+    // (because CORB will block the cross-origin preload).
+    t.done();
+  }
+  window.preloadLoadEvent = function() {
+    // Without CORB the link.onload event will be reached.
+    t.step(() => assert_unreached("link/preload onload event reached."));
+    t.done();
+  }
+});
+</script>
+
+<!-- www1 is cross-origin, so the HTTP response is CORB-eligible -->
+<link rel="preload" as="image"
+      onerror="preloadErrorEvent()"
+      onload="preloadLoadEvent()"
+      href="http://{{domains[www1]}}:{{ports[http][0]}}/fetch/corb/resources/png-mislabeled-as-html-nosniff.png">
