@@ -3,7 +3,9 @@ import os.path
 def main(request, response):
     type = request.GET.first("type", None)
 
-    body = open(os.path.join(os.path.dirname(__file__), "../../../images/blue96x96.png"), "rb").read()
+    filename = "green.svg" if type != None and "svg" in type else "blue96x96.png"
+    path = os.path.join(os.path.dirname(__file__), "../../../images", filename)
+    body = open(path, "rb").read()
 
     response.add_required_headers = False
     response.writer.write_status(200)
